@@ -21,7 +21,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class UpdaterService extends IntentService {
-    private static final String TAG = "UpdaterService";
+
+    private static final String LOG_TAG = "UpdaterService";
 
     public static final String BROADCAST_ACTION_STATE_CHANGE
             = "com.example.xyzreader.intent.action.STATE_CHANGE";
@@ -29,17 +30,19 @@ public class UpdaterService extends IntentService {
             = "com.example.xyzreader.intent.extra.REFRESHING";
 
     public UpdaterService() {
-        super(TAG);
+        super(LOG_TAG);
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Log.v(LOG_TAG, "-> onHandleIntent");
+
         Time time = new Time();
 
         ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
         if (ni == null || !ni.isConnected()) {
-            Log.w(TAG, "Not online, not refreshing.");
+            Log.w(LOG_TAG, "-> Not online, not refreshing.");
             return;
         }
 
@@ -77,7 +80,7 @@ public class UpdaterService extends IntentService {
             getContentResolver().applyBatch(ItemsContract.CONTENT_AUTHORITY, cpo);
 
         } catch (JSONException | RemoteException | OperationApplicationException e) {
-            Log.e(TAG, "Error updating content.", e);
+            Log.e(LOG_TAG, "Error updating content.", e);
         }
 
         sendStickyBroadcast(

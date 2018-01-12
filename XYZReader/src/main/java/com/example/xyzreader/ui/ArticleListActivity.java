@@ -32,6 +32,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * An activity representing a list of Articles. This activity has different presentations for
  * handset and tablet-size devices. On handsets, the activity presents a list of items, which when
@@ -40,26 +43,32 @@ import java.util.GregorianCalendar;
  */
 public class ArticleListActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>,
-        AppBarLayout.OnOffsetChangedListener {
+        AppBarLayout.OnOffsetChangedListener,
+        SwipeRefreshLayout.OnRefreshListener {
 
-    private static final String TAG = ArticleListActivity.class.toString();
-    private Toolbar mToolbar;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
-    private RecyclerView mRecyclerView;
-    private AppBarLayout appBarLayout;
-    private ImageView imageViewToolbarLogo;
-
+    private static final String LOG_TAG = ArticleListActivity.class.toString();
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
+    @BindView(R.id.swipe_refresh_layout)
+    SwipeRefreshLayout mSwipeRefreshLayout;
+    @BindView(R.id.recycler_view)
+    RecyclerView mRecyclerView;
+    @BindView(R.id.appBarLayout)
+    AppBarLayout appBarLayout;
+    @BindView(R.id.imageViewToolbarLogo)
+    ImageView imageViewToolbarLogo;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
     // Use default locale format
     private SimpleDateFormat outputFormat = new SimpleDateFormat();
     // Most time functions can only handle 1902 - 2037
     private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2, 1, 1);
+
     private boolean mIsRefreshing = false;
     private BroadcastReceiver mRefreshingReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.v(TAG, "-> mRefreshingReceiver -> onReceive");
+            Log.v(LOG_TAG, "-> mRefreshingReceiver -> onReceive");
 
             if (UpdaterService.BROADCAST_ACTION_STATE_CHANGE.equals(intent.getAction())) {
                 mIsRefreshing = intent.getBooleanExtra(UpdaterService.EXTRA_REFRESHING, false);
@@ -71,27 +80,19 @@ public class ArticleListActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.v(TAG, "-> onCreate");
+        Log.v(LOG_TAG, "-> onCreate");
 
         setContentView(R.layout.activity_article_list);
+        ButterKnife.bind(this);
 
-        appBarLayout = findViewById(R.id.appBarLayout);
         appBarLayout.addOnOffsetChangedListener(this);
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        imageViewToolbarLogo = findViewById(R.id.imageViewToolbarLogo);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
-
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         getLoaderManager().initLoader(0, null, this);
 
         if (savedInstanceState == null) {
-            refresh();
+            onRefresh();
         }
-    }
-
-    private void refresh() {
-        startService(new Intent(this, UpdaterService.class));
     }
 
     @Override
@@ -113,11 +114,14 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        Log.v(LOG_TAG, "-> onCreateLoader");
         return ArticleLoader.newAllArticlesInstance(this);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
+        Log.v(LOG_TAG, "-> onLoadFinished");
+
         Adapter adapter = new Adapter(cursor);
         adapter.setHasStableIds(true);
         mRecyclerView.setAdapter(adapter);
@@ -136,7 +140,7 @@ public class ArticleListActivity extends AppCompatActivity implements
     public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
 
         float current_scroll_position = (appBarLayout.getHeight() + verticalOffset);
-        //Log.v(TAG, "-> onOffsetChanged -> " + current_scroll_position);
+        //Log.v(LOG_TAG, "-> onOffsetChanged -> " + current_scroll_position);
 
         if (current_scroll_position == mToolbar.getHeight())
             imageViewToolbarLogo.setVisibility(View.VISIBLE);
@@ -144,7 +148,14 @@ public class ArticleListActivity extends AppCompatActivity implements
             imageViewToolbarLogo.setVisibility(View.INVISIBLE);
     }
 
+    @Override
+    public void onRefresh() {
+        Log.v(LOG_TAG, "-> onRefresh");
+        startService(new Intent(this, UpdaterService.class));
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
+
         public DynamicHeightNetworkImageView thumbnailView;
         public TextView titleView;
         public TextView subtitleView;
@@ -166,21 +177,26 @@ public class ArticleListActivity extends AppCompatActivity implements
 
         @Override
         public long getItemId(int position) {
+
             mCursor.moveToPosition(position);
             return mCursor.getLong(ArticleLoader.Query._ID);
         }
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
             View view = getLayoutInflater().inflate(R.layout.list_item_article, parent, false);
+
             final ViewHolder vh = new ViewHolder(view);
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
                     startActivity(new Intent(Intent.ACTION_VIEW,
                             ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))));
                 }
             });
+
             return vh;
         }
 
@@ -189,17 +205,19 @@ public class ArticleListActivity extends AppCompatActivity implements
                 String date = mCursor.getString(ArticleLoader.Query.PUBLISHED_DATE);
                 return dateFormat.parse(date);
             } catch (ParseException ex) {
-                Log.e(TAG, ex.getMessage());
-                Log.i(TAG, "passing today's date");
+                Log.e(LOG_TAG, ex.getMessage());
+                Log.i(LOG_TAG, "passing today's date");
                 return new Date();
             }
         }
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
+
             mCursor.moveToPosition(position);
             holder.titleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));
             Date publishedDate = parsePublishedDate();
+
             if (!publishedDate.before(START_OF_EPOCH.getTime())) {
 
                 holder.subtitleView.setText(Html.fromHtml(
@@ -215,6 +233,7 @@ public class ArticleListActivity extends AppCompatActivity implements
                                 + "<br/>" + " by "
                                 + mCursor.getString(ArticleLoader.Query.AUTHOR)));
             }
+
             holder.thumbnailView.setImageUrl(
                     mCursor.getString(ArticleLoader.Query.THUMB_URL),
                     ImageLoaderHelper.getInstance(ArticleListActivity.this).getImageLoader());
