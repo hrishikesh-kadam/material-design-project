@@ -1,4 +1,4 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -46,4 +46,77 @@
         </android.support.v7.widget.Toolbar>
     </FrameLayout>
 
-</FrameLayout>
+</FrameLayout>-->
+
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.ArticleListActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/app_bar_layout_height"
+        android:background="?colorPrimary">
+
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                app:contentInsetStart="0dp"
+                app:layout_collapseMode="pin"
+                app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+                <ImageView
+                    android:id="@+id/imageViewToolbarLogo"
+                    android:layout_width="@dimen/logo_collapsed_width"
+                    android:layout_height="@dimen/logo_collapsed_height"
+                    android:layout_marginStart="@dimen/logo_collapsed_margin_start"
+                    android:contentDescription="@string/app_name"
+                    android:src="@drawable/logo"
+                    android:visibility="invisible"
+                    tools:visibility="visible" />
+
+            </android.support.v7.widget.Toolbar>
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <!-- Press key 'B' three times in Preview window
+    to see the actual position of this logo -->
+    <ImageView
+        android:layout_width="@dimen/logo_expanded_width"
+        android:layout_height="@dimen/logo_expanded_height"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/logo"
+        app:collapsed_layout_height="@dimen/logo_collapsed_height"
+        app:collapsed_layout_width="@dimen/logo_collapsed_width"
+        app:collapsed_margin_start="@dimen/logo_collapsed_margin_start"
+        app:collapsed_scroll_position="?actionBarSize"
+        app:expanded_scroll_position="@dimen/app_bar_layout_height"
+        app:layout_behavior="com.example.xyzreader.ui.CustomBehavior" />
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="@dimen/list_side_margin"
+            android:paddingRight="@dimen/list_side_margin" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+</android.support.design.widget.CoordinatorLayout>

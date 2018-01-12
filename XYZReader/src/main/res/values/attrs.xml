@@ -2,4 +2,14 @@
     <declare-styleable name="DrawInsetsFrameLayout">
         <attr name="insetBackground" format="color|reference" />
     </declare-styleable>
+
+    <declare-styleable name="ImageViewLogo">
+        <attr name="collapsed_layout_height" format="dimension" />
+        <attr name="collapsed_layout_width" format="dimension" />
+        <attr name="android:layout_height" format="dimension" />
+        <attr name="android:layout_width" format="dimension" />
+        <attr name="collapsed_scroll_position" format="dimension" />
+        <attr name="expanded_scroll_position" format="dimension" />
+        <attr name="collapsed_margin_start" format="dimension" />
+    </declare-styleable>
 </resources>
