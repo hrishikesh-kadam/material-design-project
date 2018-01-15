@@ -12,4 +12,13 @@
         <attr name="expanded_scroll_position" format="dimension" />
         <attr name="collapsed_margin_start" format="dimension" />
     </declare-styleable>
+
+    <declare-styleable name="ArticleDetailsHeaderTextView">
+        <attr name="android:textSize" format="dimension" />
+        <attr name="collapsed_y" format="dimension" />
+        <attr name="expanded_y" format="dimension" />
+        <attr name="android:layout_marginTop" format="dimension" />
+        <attr name="android:layout_marginStart" format="dimension" />
+        <attr name="collapsed_title_marginStart" format="dimension" />
+    </declare-styleable>
 </resources>
