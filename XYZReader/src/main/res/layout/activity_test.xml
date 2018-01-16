@@ -83,10 +83,10 @@
         android:textColor="#FFF"
         android:textSize="26sp"
         app:collapsed_title_marginStart="@dimen/keyline_2"
-        app:collapsed_y="?actionBarSize"
+        app:collapsed_y="@dimen/article_details_viewHeader_height"
         app:expanded_y="@dimen/article_details_collapsing_toolbar_height"
-        app:animationAt="0.2"
         app:layout_behavior="com.example.xyzreader.ui.ArticleDetailsHeaderBehavior"
+        app:shrinkAtPercent="0.2"
         tools:text="The Legend of Sleepy Hollow" />
 
     <android.support.v4.widget.NestedScrollView
