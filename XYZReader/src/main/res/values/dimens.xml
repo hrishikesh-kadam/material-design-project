@@ -28,4 +28,7 @@
     <dimen name="article_details_viewHeader_height">100dp</dimen>
     <dimen name="article_details_textViewTitle_marginTop">266dp</dimen>
 
+    <integer name="webViewFontSize">16</integer>
+    <dimen name="webview_text_size">16sp</dimen>
+
 </resources>

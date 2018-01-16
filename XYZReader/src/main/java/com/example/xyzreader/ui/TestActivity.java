@@ -13,7 +13,7 @@ import com.example.xyzreader.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class TestActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener {
+public class TestActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = TestActivity.class.getSimpleName();
 
@@ -31,21 +31,7 @@ public class TestActivity extends AppCompatActivity implements AppBarLayout.OnOf
         super.onCreate(savedInstanceState);
         Log.v(LOG_TAG, "-> onCreate");
 
-        setContentView(R.layout.activity_test);
+        setContentView(R.layout.fragment_article_detail);
         ButterKnife.bind(this);
-
-        appBarLayout.addOnOffsetChangedListener(this);
-    }
-
-    @Override
-    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-
-//        float currentScrollPosition = (appBarLayout.getHeight() + verticalOffset);
-//        //Log.d(LOG_TAG, "-> onOffsetChanged -> " + currentScrollPosition);
-//
-//        if (currentScrollPosition <= viewHeader.getHeight())
-//            textViewToolbar.setVisibility(View.VISIBLE);
-//        else
-//            textViewToolbar.setVisibility(View.INVISIBLE);
     }
 }
