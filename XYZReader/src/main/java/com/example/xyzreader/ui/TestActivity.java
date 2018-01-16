@@ -40,12 +40,12 @@ public class TestActivity extends AppCompatActivity implements AppBarLayout.OnOf
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
 
-        float currentScrollPosition = (appBarLayout.getHeight() + verticalOffset);
-        //Log.d(LOG_TAG, "-> onOffsetChanged -> " + currentScrollPosition);
-
-        if (currentScrollPosition <= viewHeader.getHeight())
-            textViewToolbar.setVisibility(View.VISIBLE);
-        else
-            textViewToolbar.setVisibility(View.INVISIBLE);
+//        float currentScrollPosition = (appBarLayout.getHeight() + verticalOffset);
+//        //Log.d(LOG_TAG, "-> onOffsetChanged -> " + currentScrollPosition);
+//
+//        if (currentScrollPosition <= viewHeader.getHeight())
+//            textViewToolbar.setVisibility(View.VISIBLE);
+//        else
+//            textViewToolbar.setVisibility(View.INVISIBLE);
     }
 }

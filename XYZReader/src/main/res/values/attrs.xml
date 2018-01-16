@@ -20,5 +20,6 @@
         <attr name="android:layout_marginTop" format="dimension" />
         <attr name="android:layout_marginStart" format="dimension" />
         <attr name="collapsed_title_marginStart" format="dimension" />
+        <attr name="animationAt" format="float"/>
     </declare-styleable>
 </resources>
