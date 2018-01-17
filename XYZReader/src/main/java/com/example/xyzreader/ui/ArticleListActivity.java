@@ -47,16 +47,24 @@ public class ArticleListActivity extends AppCompatActivity implements
         SwipeRefreshLayout.OnRefreshListener {
 
     private static final String LOG_TAG = ArticleListActivity.class.toString();
+
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
+
     @BindView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout mSwipeRefreshLayout;
+
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
+
     @BindView(R.id.appBarLayout)
     AppBarLayout appBarLayout;
+
     @BindView(R.id.imageViewToolbarLogo)
     ImageView imageViewToolbarLogo;
+
+    @BindView(R.id.viewLoadingMask)
+    View viewLoadingMask;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
     // Use default locale format
@@ -109,7 +117,14 @@ public class ArticleListActivity extends AppCompatActivity implements
     }
 
     private void updateRefreshingUI() {
+        Log.v(LOG_TAG, "-> updateRefreshingUI");
+
         mSwipeRefreshLayout.setRefreshing(mIsRefreshing);
+
+        if (mIsRefreshing)
+            viewLoadingMask.setVisibility(View.VISIBLE);
+        else
+            viewLoadingMask.setVisibility(View.INVISIBLE);
     }
 
     @Override

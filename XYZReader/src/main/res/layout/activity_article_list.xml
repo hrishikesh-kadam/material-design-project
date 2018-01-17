@@ -111,12 +111,27 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_view"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingLeft="@dimen/list_side_margin"
-            android:paddingRight="@dimen/list_side_margin" />
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingLeft="@dimen/list_side_margin"
+                android:paddingRight="@dimen/list_side_margin" />
+
+            <View
+                android:id="@+id/viewLoadingMask"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#44000000"
+                android:clickable="true"
+                android:focusable="true"
+                android:visibility="invisible" />
+
+        </FrameLayout>
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
