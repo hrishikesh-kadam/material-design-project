@@ -37,10 +37,12 @@
 
                 <TextView
                     android:id="@+id/textViewSubTitle"
-                    android:layout_width="wrap_content"
+                    android:layout_width="500dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/keyline_1"
+                    android:layout_centerHorizontal="true"
                     android:layout_marginTop="55dp"
+                    android:paddingEnd="16dp"
+                    android:paddingStart="16dp"
                     android:textColor="#FFF"
                     android:textSize="16sp"
                     tools:text="Jan 1, 1820 by Washington Irving" />
@@ -84,6 +86,9 @@
         app:expanded_y="@dimen/article_details_collapsing_toolbar_height"
         app:layout_behavior="com.example.xyzreader.ui.ArticleDetailsHeaderBehavior"
         app:shrinkAtPercent="0.2"
+        tools:layout_gravity="center_horizontal"
+        tools:layout_width="500dp"
+        tools:paddingStart="8dp"
         tools:text="The Legend of Sleepy Hollow" />
 
     <android.support.v4.widget.NestedScrollView
@@ -94,15 +99,15 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <android.support.v7.widget.CardView
-            android:layout_gravity="center_horizontal"
             android:layout_width="500dp"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal">
 
             <WebView
                 android:id="@+id/webView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp" />
+                android:layout_margin="8dp" />
 
             <TextView
                 android:id="@+id/textViewBody"

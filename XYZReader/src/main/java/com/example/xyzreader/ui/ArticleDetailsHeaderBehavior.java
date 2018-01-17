@@ -111,7 +111,18 @@ public class ArticleDetailsHeaderBehavior extends CoordinatorLayout.Behavior<Tex
 
     @Override
     public boolean layoutDependsOn(CoordinatorLayout parent, TextView child, View dependency) {
-        return dependency.getId() == R.id.nestedScrollView;
+
+        if (dependency.getId() == R.id.nestedScrollView) {
+
+            TextView textViewSubTitle = parent.findViewById(R.id.textViewSubTitle);
+            expandedTitleMarginStart = textViewSubTitle.getX() + textViewSubTitle.getPaddingStart();
+            titleMarginStartDifference = collapsedTitleMarginStart - expandedTitleMarginStart;
+
+            //Log.d(LOG_TAG, "-> layoutDependsOn -> expandedTitleMarginStart = " + expandedTitleMarginStart);
+
+            return true;
+        }
+        return false;
     }
 
     @Override
