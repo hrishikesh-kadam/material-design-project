@@ -1,12 +1,17 @@
 package com.example.xyzreader.ui;
 
+import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.graphics.Palette;
 import android.text.Html;
 import android.text.format.DateUtils;
@@ -38,7 +43,8 @@ import butterknife.ButterKnife;
  * tablets) or a {@link ArticleDetailActivity} on handsets.
  */
 public class ArticleDetailFragment extends Fragment implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>,
+        NestedScrollView.OnScrollChangeListener {
 
     public static final String ARG_ITEM_ID = "item_id";
     private static final String LOG_TAG = ArticleDetailFragment.class.getSimpleName();
@@ -61,12 +67,23 @@ public class ArticleDetailFragment extends Fragment implements
     @BindView(R.id.webView)
     WebView webView;
 
+    @BindView(R.id.nestedScrollView)
+    NestedScrollView nestedScrollView;
+
+    @BindView(R.id.appBarLayout)
+    AppBarLayout appBarLayout;
+
+    @Nullable
+    @BindView(R.id.viewHeaderBeneath)
+    View viewHeaderBeneath;
+
     private Cursor mCursor;
     private long mItemId;
     private View mRootView;
     private int mMutedColor = 0xFF333333;
     private ColorDrawable mStatusBarColorDrawable;
 
+    //TODO is mIsCard required
     private boolean mIsCard = false;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
@@ -127,8 +144,12 @@ public class ArticleDetailFragment extends Fragment implements
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
         ButterKnife.bind(this, mRootView);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && viewHeaderBeneath != null)
+            nestedScrollView.setOnScrollChangeListener(this);
+
         webView.getSettings().setDefaultFontSize(getResources().getInteger(R.integer.webViewFontSize));
 
+        // TODO is mStatusBarColorDrawable needed?
         mStatusBarColorDrawable = new ColorDrawable(0);
 
 //        mRootView.findViewById(R.id.share_fab).setOnClickListener(new View.OnClickListener() {
@@ -205,7 +226,7 @@ public class ArticleDetailFragment extends Fragment implements
                 @Override
                 public void onProgressChanged(WebView view, int newProgress) {
                     super.onProgressChanged(view, newProgress);
-                    Log.d(LOG_TAG, "-> onProgressChanged -> newProgress = " + newProgress);
+                    //Log.d(LOG_TAG, "-> onProgressChanged -> newProgress = " + newProgress);
 
                     if (newProgress == 100)
                         textViewBody.setVisibility(View.INVISIBLE);
@@ -280,5 +301,16 @@ public class ArticleDetailFragment extends Fragment implements
 
         mCursor = null;
         bindViews();
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    @Override
+    public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+        //Log.d(LOG_TAG, "-> onScrollChange -> scrollY = " + scrollY);
+
+        if (scrollY >= viewHeaderBeneath.getHeight())
+            appBarLayout.setElevation(8.0F);
+        else
+            appBarLayout.setElevation(0.0F);
     }
 }

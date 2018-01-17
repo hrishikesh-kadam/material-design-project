@@ -9,4 +9,6 @@
 
     <string name="up">Up</string>
 
+    <string name="loading_please_wait">Loading&#8230;Please wait</string>
+
 </resources>

@@ -9,7 +9,8 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:elevation="0dp">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/collapsingToolbarLayout"
@@ -98,26 +99,38 @@
         android:scrollbars="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <android.support.v7.widget.CardView
-            android:layout_width="500dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_horizontal">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-            <WebView
-                android:id="@+id/webView"
+            <View
+                android:id="@+id/viewHeaderBeneath"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp" />
+                android:layout_height="50dp"
+                android:background="?attr/colorPrimary" />
 
-            <TextView
-                android:id="@+id/textViewBody"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:text="Loading..."
-                android:textSize="@dimen/webview_text_size" />
+            <android.support.v7.widget.CardView
+                android:layout_width="500dp"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true">
 
-        </android.support.v7.widget.CardView>
+                <WebView
+                    android:id="@+id/webView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp" />
+
+                <TextView
+                    android:id="@+id/textViewBody"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:text="@string/loading_please_wait"
+                    android:textSize="@dimen/webview_text_size" />
+
+            </android.support.v7.widget.CardView>
+
+        </RelativeLayout>
 
     </android.support.v4.widget.NestedScrollView>
 

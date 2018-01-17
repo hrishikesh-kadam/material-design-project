@@ -112,6 +112,8 @@ public class ArticleDetailsHeaderBehavior extends CoordinatorLayout.Behavior<Tex
     @Override
     public boolean layoutDependsOn(CoordinatorLayout parent, TextView child, View dependency) {
 
+        //Log.d(LOG_TAG, "-> layoutDependsOn -> " + dependency.getClass().getSimpleName());
+
         if (dependency.getId() == R.id.nestedScrollView) {
 
             TextView textViewSubTitle = parent.findViewById(R.id.textViewSubTitle);
@@ -129,10 +131,11 @@ public class ArticleDetailsHeaderBehavior extends CoordinatorLayout.Behavior<Tex
     public boolean onDependentViewChanged(CoordinatorLayout parent, TextView child, View dependency) {
 
         float scrollPosition = dependency.getY();
-        //Log.v(LOG_TAG, "-> onDependentViewChanged -> scrollPosition = " + scrollPosition);
+        //Log.d(LOG_TAG, "-> onDependentViewChanged -> scrollPosition = " + scrollPosition);
 
         float scrollPercent = ((scrollPosition - collapsedY)
                 / yScrollDifference);
+        //Log.d(LOG_TAG, "-> onDependentViewChanged -> scrollPercent = " + scrollPercent);
 
         float shrinkScrollPercent = scrollPercent / shrinkAtPercent;
 
@@ -172,7 +175,7 @@ public class ArticleDetailsHeaderBehavior extends CoordinatorLayout.Behavior<Tex
                 isTextViewSubTitleVisible = false;
             }
 
-        } else if (scrollPercent >= 0.0 && scrollPercent <= 1.0) {
+        } else if (scrollPercent >= 0.0 && scrollPercent <= 1.1) {
 
             //Log.d(LOG_TAG, "-> onDependentViewChanged -> scrollPercent = " + scrollPercent);
 
