@@ -1,24 +1,27 @@
 package com.example.xyzreader.ui;
 
 import android.annotation.TargetApi;
-import android.app.Fragment;
-import android.app.LoaderManager;
-import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.graphics.Palette;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.ImageView;
@@ -51,41 +54,39 @@ public class ArticleDetailFragment extends Fragment implements
 
     @BindView(R.id.textViewToolbar)
     TextView textViewToolbar;
-
     @BindView(R.id.imageView)
     ImageView imageView;
-
     @BindView(R.id.textViewTitle)
     TextView textViewTitle;
-
     @BindView(R.id.textViewSubTitle)
     TextView textViewSubTitle;
-
     @BindView(R.id.textViewBody)
     TextView textViewBody;
-
     @BindView(R.id.webView)
     WebView webView;
-
     @BindView(R.id.nestedScrollView)
     NestedScrollView nestedScrollView;
-
     @BindView(R.id.appBarLayout)
     AppBarLayout appBarLayout;
-
     @Nullable
     @BindView(R.id.viewHeaderBeneath)
     View viewHeaderBeneath;
+    @BindView(R.id.viewHeader)
+    View viewHeader;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.collapsingToolbarLayout)
+    CollapsingToolbarLayout collapsingToolbarLayout;
 
     private Cursor mCursor;
     private long mItemId;
+    private int position;
     private View mRootView;
-    private int mMutedColor = 0xFF333333;
-    private ColorDrawable mStatusBarColorDrawable;
-
+    private int vibrantColor = 0;
+    private int darkVibrantColor = 0;
+    private IsThisFragmentSelectedListener isThisFragmentSelectedListener;
     //TODO is mIsCard required
     private boolean mIsCard = false;
-
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
     // Use default locale format
     private SimpleDateFormat outputFormat = new SimpleDateFormat();
@@ -99,11 +100,12 @@ public class ArticleDetailFragment extends Fragment implements
     public ArticleDetailFragment() {
     }
 
-    public static ArticleDetailFragment newInstance(long itemId) {
+    public static ArticleDetailFragment newInstance(long itemId, int position) {
         Log.v(LOG_TAG, "-> newInstance");
 
         Bundle arguments = new Bundle();
         arguments.putLong(ARG_ITEM_ID, itemId);
+        arguments.putInt("position", position);
         ArticleDetailFragment fragment = new ArticleDetailFragment();
         fragment.setArguments(arguments);
         return fragment;
@@ -114,8 +116,13 @@ public class ArticleDetailFragment extends Fragment implements
         super.onCreate(savedInstanceState);
         Log.v(LOG_TAG, "-> onCreate");
 
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
-            mItemId = getArguments().getLong(ARG_ITEM_ID);
+        if (getArguments() != null) {
+
+            if (getArguments().containsKey(ARG_ITEM_ID))
+                mItemId = getArguments().getLong(ARG_ITEM_ID);
+
+            if (getArguments().containsKey("position"))
+                position = getArguments().getInt("position");
         }
 
         mIsCard = getResources().getBoolean(R.bool.detail_is_card);
@@ -144,13 +151,12 @@ public class ArticleDetailFragment extends Fragment implements
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
         ButterKnife.bind(this, mRootView);
 
+        isThisFragmentSelectedListener = (IsThisFragmentSelectedListener) getActivity();
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && viewHeaderBeneath != null)
             nestedScrollView.setOnScrollChangeListener(this);
 
         webView.getSettings().setDefaultFontSize(getResources().getInteger(R.integer.webViewFontSize));
-
-        // TODO is mStatusBarColorDrawable needed?
-        mStatusBarColorDrawable = new ColorDrawable(0);
 
 //        mRootView.findViewById(R.id.share_fab).setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -233,6 +239,8 @@ public class ArticleDetailFragment extends Fragment implements
                 }
             });
 
+            //TODO check font of webView
+
             ImageLoaderHelper.getInstance(getActivity()).getImageLoader()
                     .get(mCursor.getString(ArticleLoader.Query.PHOTO_URL), new ImageLoader.ImageListener() {
 
@@ -243,14 +251,22 @@ public class ArticleDetailFragment extends Fragment implements
 
                             if (bitmap != null) {
 
-                                Palette p = Palette.generate(bitmap, 12);
-                                mMutedColor = p.getDarkMutedColor(0xFF333333);
-                                imageView.setImageBitmap(imageContainer.getBitmap());
-//                                mRootView.findViewById(R.id.meta_bar)
-//                                        .setBackgroundColor(mMutedColor);
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-                                //TODO updateStatusBar
-                                //updateStatusBar();
+                                    Palette palette = Palette.from(bitmap).generate();
+                                    vibrantColor = palette.getVibrantColor(getResources().getColor(R.color.colorPrimary));
+                                    darkVibrantColor = palette.getDarkVibrantColor(getResources().getColor(R.color.colorPrimaryDark));
+
+                                    viewHeader.setBackgroundColor(vibrantColor);
+                                    if (viewHeaderBeneath != null)
+                                        viewHeaderBeneath.setBackgroundColor(vibrantColor);
+
+                                    collapsingToolbarLayout.setContentScrimColor(vibrantColor);
+
+                                    setStatusBarColor();
+                                }
+
+                                imageView.setImageBitmap(imageContainer.getBitmap());
                             }
                         }
 
@@ -263,6 +279,23 @@ public class ArticleDetailFragment extends Fragment implements
             mRootView.setVisibility(View.GONE);
             textViewTitle.setText("N/A");
             textViewSubTitle.setText("N/A");
+        }
+    }
+
+    public void setStatusBarColor() {
+        //Log.d(LOG_TAG, "-> setStatusBarColor -> position = " + position);
+
+        if (isThisFragmentSelectedListener == null)
+            return;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
+                vibrantColor != 0 &&
+                isThisFragmentSelectedListener.isThisFragmentSelected(position)) {
+
+            Window window = getActivity().getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(darkVibrantColor);
         }
     }
 
@@ -312,5 +345,9 @@ public class ArticleDetailFragment extends Fragment implements
             appBarLayout.setElevation(8.0F);
         else
             appBarLayout.setElevation(0.0F);
+    }
+
+    public interface IsThisFragmentSelectedListener {
+        boolean isThisFragmentSelected(int position);
     }
 }
