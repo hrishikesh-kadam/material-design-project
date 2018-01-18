@@ -1,6 +1,8 @@
 package com.example.xyzreader.ui;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Build;
@@ -8,13 +10,13 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -77,6 +79,8 @@ public class ArticleDetailFragment extends Fragment implements
     Toolbar toolbar;
     @BindView(R.id.collapsingToolbarLayout)
     CollapsingToolbarLayout collapsingToolbarLayout;
+    @BindView(R.id.fab)
+    FloatingActionButton fab;
 
     private Cursor mCursor;
     private long mItemId;
@@ -158,6 +162,8 @@ public class ArticleDetailFragment extends Fragment implements
 
         webView.getSettings().setDefaultFontSize(getResources().getInteger(R.integer.webViewFontSize));
 
+        //TODO Logo for all density buckets
+
 //        mRootView.findViewById(R.id.share_fab).setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
@@ -202,28 +208,24 @@ public class ArticleDetailFragment extends Fragment implements
 
             Date publishedDate = parsePublishedDate();
 
+            final String subTitle;
+
             if (!publishedDate.before(START_OF_EPOCH.getTime())) {
-                textViewSubTitle.setText(Html.fromHtml(
-                        DateUtils.getRelativeTimeSpanString(
-                                publishedDate.getTime(),
-                                System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
-                                DateUtils.FORMAT_ABBREV_ALL).toString()
-                                + " by <font color='#ffffff'>"
-                                + mCursor.getString(ArticleLoader.Query.AUTHOR)
-                                + "</font>"));
+
+                subTitle = getString(R.string.subtitle_text, DateUtils.getRelativeTimeSpanString(
+                        publishedDate.getTime(), System.currentTimeMillis(),
+                        DateUtils.HOUR_IN_MILLIS,
+                        DateUtils.FORMAT_ABBREV_ALL).toString(),
+                        mCursor.getString(ArticleLoader.Query.AUTHOR));
 
             } else {
                 // If date is before 1902, just show the string
-                textViewSubTitle.setText(Html.fromHtml(
-                        outputFormat.format(publishedDate) + " by <font color='#ffffff'>"
-                                + mCursor.getString(ArticleLoader.Query.AUTHOR)
-                                + "</font>"));
 
+                subTitle = getString(R.string.subtitle_text, outputFormat.format(publishedDate),
+                        mCursor.getString(ArticleLoader.Query.AUTHOR));
             }
 
-            //String bodyText = mCursor.getString(ArticleLoader.Query.BODY);
-            //textViewBody.setText(mCursor.getString(ArticleLoader.Query.BODY));
-            //textViewBody.setText(Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY).replaceAll("(\r\n|\n)", "<br />")));
+            textViewSubTitle.setText(subTitle);
 
             webView.loadData(mCursor.getString(ArticleLoader.Query.BODY).replaceAll("(\r\n|\n)", "<br />"),
                     "text/html", "UTF-8");
@@ -240,6 +242,25 @@ public class ArticleDetailFragment extends Fragment implements
             });
 
             //TODO check font of webView
+
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d(LOG_TAG, "-> onClickFab");
+
+                    StringBuilder stringBuilder = new StringBuilder();
+                    stringBuilder.append(mCursor.getString(ArticleLoader.Query.TITLE))
+                            .append("\n\n").append(subTitle)
+                            .append("\n\n")
+                            .append(mCursor.getString(ArticleLoader.Query.BODY).substring(0, 1000));
+
+                    Intent shareIntent = new Intent();
+                    shareIntent.setAction(Intent.ACTION_SEND);
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, stringBuilder.toString());
+                    shareIntent.setType("text/plain");
+                    startActivity(Intent.createChooser(shareIntent, getString(R.string.action_share)));
+                }
+            });
 
             ImageLoaderHelper.getInstance(getActivity()).getImageLoader()
                     .get(mCursor.getString(ArticleLoader.Query.PHOTO_URL), new ImageLoader.ImageListener() {
@@ -262,6 +283,7 @@ public class ArticleDetailFragment extends Fragment implements
                                         viewHeaderBeneath.setBackgroundColor(vibrantColor);
 
                                     collapsingToolbarLayout.setContentScrimColor(vibrantColor);
+                                    fab.setBackgroundTintList(ColorStateList.valueOf(vibrantColor));
 
                                     setStatusBarColor();
                                 }
