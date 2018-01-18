@@ -22,6 +22,10 @@
     <dimen name="logo_collapsed_height">40dp</dimen>
     <dimen name="logo_collapsed_margin_start">16dp</dimen>
 
+    <dimen name="list_card_margin">16dp</dimen>
+
+    <integer name="list_column_count">2</integer>
+
     <!-- ArticleDetailActivity -->
     <dimen name="article_details_collapsing_toolbar_height">350dp</dimen>
     <dimen name="article_details_imageView_height">250dp</dimen>

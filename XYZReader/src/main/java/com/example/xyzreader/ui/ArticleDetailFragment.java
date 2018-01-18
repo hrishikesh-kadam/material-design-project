@@ -41,6 +41,7 @@ import java.util.GregorianCalendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import jp.wasabeef.blurry.Blurry;
 
 /**
  * A fragment representing a single Article detail screen. This fragment is
@@ -56,8 +57,10 @@ public class ArticleDetailFragment extends Fragment implements
 
     @BindView(R.id.textViewToolbar)
     TextView textViewToolbar;
-    @BindView(R.id.imageView)
-    ImageView imageView;
+    @BindView(R.id.imageViewBottom)
+    ImageView imageViewBottom;
+    @BindView(R.id.imageViewTop)
+    ImageView imageViewTop;
     @BindView(R.id.textViewTitle)
     TextView textViewTitle;
     @BindView(R.id.textViewSubTitle)
@@ -89,8 +92,6 @@ public class ArticleDetailFragment extends Fragment implements
     private int vibrantColor = 0;
     private int darkVibrantColor = 0;
     private IsThisFragmentSelectedListener isThisFragmentSelectedListener;
-    //TODO is mIsCard required
-    private boolean mIsCard = false;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
     // Use default locale format
     private SimpleDateFormat outputFormat = new SimpleDateFormat();
@@ -129,8 +130,6 @@ public class ArticleDetailFragment extends Fragment implements
                 position = getArguments().getInt("position");
         }
 
-        mIsCard = getResources().getBoolean(R.bool.detail_is_card);
-
         //TODO check is setHasOptionsMenu required
         //setHasOptionsMenu(true);
     }
@@ -163,16 +162,6 @@ public class ArticleDetailFragment extends Fragment implements
         webView.getSettings().setDefaultFontSize(getResources().getInteger(R.integer.webViewFontSize));
 
         //TODO Logo for all density buckets
-
-//        mRootView.findViewById(R.id.share_fab).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(getActivity())
-//                        .setType("text/plain")
-//                        .setText("Some sample text")
-//                        .getIntent(), getString(R.string.action_share)));
-//            }
-//        });
 
         bindViews();
         return mRootView;
@@ -288,7 +277,8 @@ public class ArticleDetailFragment extends Fragment implements
                                     setStatusBarColor();
                                 }
 
-                                imageView.setImageBitmap(imageContainer.getBitmap());
+                                Blurry.with(getContext()).from(imageContainer.getBitmap()).into(imageViewBottom);
+                                imageViewTop.setImageBitmap(imageContainer.getBitmap());
                             }
                         }
 

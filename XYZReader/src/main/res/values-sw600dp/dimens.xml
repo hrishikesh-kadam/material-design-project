@@ -13,4 +13,6 @@
     <!-- activity_article_list.xml -->
     <dimen name="logo_collapsed_margin_start">24dp</dimen>
 
+    <dimen name="list_card_margin">24dp</dimen>
+
 </resources>

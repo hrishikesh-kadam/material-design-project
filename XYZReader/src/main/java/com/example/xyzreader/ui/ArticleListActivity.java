@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
@@ -24,6 +25,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
@@ -36,6 +39,7 @@ import java.util.GregorianCalendar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import jp.wasabeef.blurry.Blurry;
 
 /**
  * An activity representing a list of Articles. This activity has different presentations for
@@ -130,10 +134,8 @@ public class ArticleListActivity extends AppCompatActivity implements
             viewLoadingMask.setVisibility(View.VISIBLE);
             Snackbar.make(rootView, R.string.new_feed_downloading, Snackbar.LENGTH_SHORT).show();
         }
-        else {
+        else
             viewLoadingMask.setVisibility(View.INVISIBLE);
-            Snackbar.make(rootView, R.string.done, Snackbar.LENGTH_SHORT).show();
-        }
     }
 
     @Override
@@ -180,15 +182,17 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public DynamicHeightNetworkImageView thumbnailView;
+        public ImageView imageViewBottom;
+        public ImageView imageViewTop;
         public TextView titleView;
         public TextView subtitleView;
 
         public ViewHolder(View view) {
             super(view);
-            thumbnailView = (DynamicHeightNetworkImageView) view.findViewById(R.id.thumbnail);
-            titleView = (TextView) view.findViewById(R.id.article_title);
-            subtitleView = (TextView) view.findViewById(R.id.article_subtitle);
+            imageViewBottom = view.findViewById(R.id.imageViewBottom);
+            imageViewTop = view.findViewById(R.id.imageViewTop);
+            titleView = view.findViewById(R.id.article_title);
+            subtitleView = view.findViewById(R.id.article_subtitle);
         }
     }
 
@@ -218,8 +222,6 @@ public class ArticleListActivity extends AppCompatActivity implements
 
                     startActivity(new Intent(Intent.ACTION_VIEW,
                             ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))));
-
-                    //startActivity(new Intent(ArticleListActivity.this, TestActivity.class));
                 }
             });
 
@@ -238,7 +240,7 @@ public class ArticleListActivity extends AppCompatActivity implements
         }
 
         @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
+        public void onBindViewHolder(final ViewHolder holder, int position) {
 
             mCursor.moveToPosition(position);
             holder.titleView.setText(mCursor.getString(ArticleLoader.Query.TITLE));
@@ -260,10 +262,26 @@ public class ArticleListActivity extends AppCompatActivity implements
                                 + mCursor.getString(ArticleLoader.Query.AUTHOR)));
             }
 
-            holder.thumbnailView.setImageUrl(
-                    mCursor.getString(ArticleLoader.Query.THUMB_URL),
-                    ImageLoaderHelper.getInstance(ArticleListActivity.this).getImageLoader());
-            holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
+            ImageLoaderHelper.getInstance(ArticleListActivity.this).getImageLoader()
+                    .get(mCursor.getString(ArticleLoader.Query.THUMB_URL), new ImageLoader.ImageListener() {
+
+                        @Override
+                        public void onResponse(ImageLoader.ImageContainer imageContainer, boolean b) {
+
+                            Bitmap bitmap = imageContainer.getBitmap();
+
+                            if (bitmap != null) {
+
+                                Blurry.with(ArticleListActivity.this)
+                                        .from(imageContainer.getBitmap()).into(holder.imageViewBottom);
+                                holder.imageViewTop.setImageBitmap(imageContainer.getBitmap());
+                            }
+                        }
+
+                        @Override
+                        public void onErrorResponse(VolleyError volleyError) {
+                        }
+                    });
         }
 
         @Override
