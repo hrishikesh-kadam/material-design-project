@@ -7,8 +7,6 @@
     <string name="action_settings">Settings</string>
     <string name="action_share">Share</string>
 
-    <string name="up">Up</string>
-
     <string name="loading_please_wait">Loading&#8230;Please wait</string>
     <string name="subtitle_text">%s by %s</string>
     <string name="new_feed_downloading">New feed downloading</string>

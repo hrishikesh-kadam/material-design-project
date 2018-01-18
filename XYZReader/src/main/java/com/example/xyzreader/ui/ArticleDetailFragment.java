@@ -129,9 +129,6 @@ public class ArticleDetailFragment extends Fragment implements
             if (getArguments().containsKey("position"))
                 position = getArguments().getInt("position");
         }
-
-        //TODO check is setHasOptionsMenu required
-        //setHasOptionsMenu(true);
     }
 
     @Override
@@ -153,6 +150,14 @@ public class ArticleDetailFragment extends Fragment implements
 
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
         ButterKnife.bind(this, mRootView);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.v(LOG_TAG, "-> back icon clicked");
+                getActivity().finish();
+            }
+        });
 
         isThisFragmentSelectedListener = (IsThisFragmentSelectedListener) getActivity();
 
