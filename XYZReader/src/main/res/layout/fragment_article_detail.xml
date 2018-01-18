@@ -109,13 +109,13 @@
                 android:id="@+id/webView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp" />
+                android:layout_margin="@dimen/keyline_1" />
 
             <TextView
                 android:id="@+id/textViewBody"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
+                android:layout_margin="@dimen/keyline_1"
                 android:text="@string/loading_please_wait"
                 android:textSize="@dimen/webview_text_size" />
 
@@ -127,7 +127,7 @@
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_margin="@dimen/keyline_1"
         android:src="@drawable/ic_share"
         app:backgroundTint="?attr/colorPrimary"
         app:fabSize="normal"

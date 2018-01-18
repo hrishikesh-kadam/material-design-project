@@ -50,7 +50,8 @@ import jp.wasabeef.blurry.Blurry;
  */
 public class ArticleDetailFragment extends Fragment implements
         LoaderManager.LoaderCallbacks<Cursor>,
-        NestedScrollView.OnScrollChangeListener {
+        NestedScrollView.OnScrollChangeListener,
+        AppBarLayout.OnOffsetChangedListener {
 
     public static final String ARG_ITEM_ID = "item_id";
     private static final String LOG_TAG = ArticleDetailFragment.class.getSimpleName();
@@ -164,9 +165,9 @@ public class ArticleDetailFragment extends Fragment implements
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && viewHeaderBeneath != null)
             nestedScrollView.setOnScrollChangeListener(this);
 
-        webView.getSettings().setDefaultFontSize(getResources().getInteger(R.integer.webViewFontSize));
+        appBarLayout.addOnOffsetChangedListener(this);
 
-        //TODO Logo for all density buckets
+        webView.getSettings().setDefaultFontSize(getResources().getInteger(R.integer.webViewFontSize));
 
         bindViews();
         return mRootView;
@@ -235,12 +236,10 @@ public class ArticleDetailFragment extends Fragment implements
                 }
             });
 
-            //TODO check font of webView
-
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d(LOG_TAG, "-> onClickFab");
+                    Log.v(LOG_TAG, "-> onClickFab");
 
                     StringBuilder stringBuilder = new StringBuilder();
                     stringBuilder.append(mCursor.getString(ArticleLoader.Query.TITLE))
@@ -356,12 +355,19 @@ public class ArticleDetailFragment extends Fragment implements
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-        //Log.d(LOG_TAG, "-> onScrollChange -> scrollY = " + scrollY);
+        Log.d(LOG_TAG, "-> onScrollChange -> scrollY = " + scrollY);
 
         if (scrollY >= viewHeaderBeneath.getHeight())
-            appBarLayout.setElevation(8.0F);
+            appBarLayout.setElevation(4.0F);
         else
             appBarLayout.setElevation(0.0F);
+    }
+
+    @Override
+    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+        Log.d(LOG_TAG, "-> onOffsetChanged -> verticalOffset = " + verticalOffset);
+
+
     }
 
     public interface IsThisFragmentSelectedListener {
