@@ -7,6 +7,8 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -66,6 +68,9 @@ public class ArticleListActivity extends AppCompatActivity implements
     @BindView(R.id.viewLoadingMask)
     View viewLoadingMask;
 
+    @BindView(R.id.rootView)
+    CoordinatorLayout rootView;
+
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
     // Use default locale format
     private SimpleDateFormat outputFormat = new SimpleDateFormat();
@@ -121,10 +126,14 @@ public class ArticleListActivity extends AppCompatActivity implements
 
         mSwipeRefreshLayout.setRefreshing(mIsRefreshing);
 
-        if (mIsRefreshing)
+        if (mIsRefreshing) {
             viewLoadingMask.setVisibility(View.VISIBLE);
-        else
+            Snackbar.make(rootView, R.string.new_feed_downloading, Snackbar.LENGTH_SHORT).show();
+        }
+        else {
             viewLoadingMask.setVisibility(View.INVISIBLE);
+            Snackbar.make(rootView, R.string.done, Snackbar.LENGTH_SHORT).show();
+        }
     }
 
     @Override
