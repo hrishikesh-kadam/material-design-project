@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -50,8 +51,7 @@ import jp.wasabeef.blurry.Blurry;
  */
 public class ArticleDetailFragment extends Fragment implements
         LoaderManager.LoaderCallbacks<Cursor>,
-        NestedScrollView.OnScrollChangeListener,
-        AppBarLayout.OnOffsetChangedListener {
+        NestedScrollView.OnScrollChangeListener {
 
     public static final String ARG_ITEM_ID = "item_id";
     private static final String LOG_TAG = ArticleDetailFragment.class.getSimpleName();
@@ -98,6 +98,7 @@ public class ArticleDetailFragment extends Fragment implements
     private SimpleDateFormat outputFormat = new SimpleDateFormat();
     // Most time functions can only handle 1902 - 2037
     private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2, 1, 1);
+    private int nestedScrollViewScrollY;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -165,9 +166,10 @@ public class ArticleDetailFragment extends Fragment implements
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && viewHeaderBeneath != null)
             nestedScrollView.setOnScrollChangeListener(this);
 
-        appBarLayout.addOnOffsetChangedListener(this);
-
         webView.getSettings().setDefaultFontSize(getResources().getInteger(R.integer.webViewFontSize));
+
+        if (savedInstanceState != null)
+            nestedScrollViewScrollY = savedInstanceState.getInt("nestedScrollViewScrollY");
 
         bindViews();
         return mRootView;
@@ -223,16 +225,28 @@ public class ArticleDetailFragment extends Fragment implements
             textViewSubTitle.setText(subTitle);
 
             webView.loadData(mCursor.getString(ArticleLoader.Query.BODY).replaceAll("(\r\n|\n)", "<br />"),
-                    "text/html", "UTF-8");
+                    "text/html", null);
             webView.setBackgroundColor(0);
             webView.setWebChromeClient(new WebChromeClient() {
+
                 @Override
                 public void onProgressChanged(WebView view, int newProgress) {
                     super.onProgressChanged(view, newProgress);
                     //Log.d(LOG_TAG, "-> onProgressChanged -> newProgress = " + newProgress);
 
-                    if (newProgress == 100)
+                    if (newProgress < 100)
+                        textViewBody.setVisibility(View.VISIBLE);
+
+                    else if (newProgress == 100) {
                         textViewBody.setVisibility(View.INVISIBLE);
+
+                        nestedScrollView.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                nestedScrollView.smoothScrollTo(0, nestedScrollViewScrollY);
+                            }
+                        }, 1000);
+                    }
                 }
             });
 
@@ -242,7 +256,8 @@ public class ArticleDetailFragment extends Fragment implements
                     Log.v(LOG_TAG, "-> onClickFab");
 
                     StringBuilder stringBuilder = new StringBuilder();
-                    stringBuilder.append(mCursor.getString(ArticleLoader.Query.TITLE))
+                    stringBuilder.append(getString(R.string.sharing_some_glimpse))
+                            .append("\n\n").append(mCursor.getString(ArticleLoader.Query.TITLE))
                             .append("\n\n").append(subTitle)
                             .append("\n\n")
                             .append(mCursor.getString(ArticleLoader.Query.BODY).substring(0, 1000));
@@ -355,7 +370,7 @@ public class ArticleDetailFragment extends Fragment implements
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-        Log.d(LOG_TAG, "-> onScrollChange -> scrollY = " + scrollY);
+        //Log.d(LOG_TAG, "-> onScrollChange -> scrollY = " + scrollY);
 
         if (scrollY >= viewHeaderBeneath.getHeight())
             appBarLayout.setElevation(4.0F);
@@ -364,11 +379,12 @@ public class ArticleDetailFragment extends Fragment implements
     }
 
     @Override
-    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-        Log.d(LOG_TAG, "-> onOffsetChanged -> verticalOffset = " + verticalOffset);
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
 
-
+        outState.putInt("nestedScrollViewScrollY", nestedScrollView.getScrollY());
     }
+
 
     public interface IsThisFragmentSelectedListener {
         boolean isThisFragmentSelected(int position);

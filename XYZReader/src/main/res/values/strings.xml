@@ -11,5 +11,6 @@
     <string name="subtitle_text">%s by %s</string>
     <string name="new_feed_downloading">New feed downloading</string>
     <string name="done">Done</string>
+    <string name="sharing_some_glimpse">Hey! Sharing some glimpse of this article</string>
 
 </resources>
