@@ -155,6 +155,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="16dp"
                     android:text="@string/loading_please_wait"
+                    android:textColor="#000"
                     android:textSize="@dimen/webview_text_size" />
 
             </android.support.v7.widget.CardView>
