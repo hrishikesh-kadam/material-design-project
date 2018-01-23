@@ -44,8 +44,6 @@ public class CustomBehavior extends CoordinatorLayout.Behavior<ImageView> {
                 R.styleable.ImageViewLogo_collapsed_layout_height, 0F);
         collapsed_layout_width = typedArray.getDimension(
                 R.styleable.ImageViewLogo_collapsed_layout_width, 0F);
-        collapsed_margin_start = typedArray.getDimension(
-                R.styleable.ImageViewLogo_collapsed_margin_start, 0F);
 
         expanded_layout_height = typedArray.getDimension(
                 R.styleable.ImageViewLogo_android_layout_height, 0F);
@@ -54,6 +52,11 @@ public class CustomBehavior extends CoordinatorLayout.Behavior<ImageView> {
         expanded_layout_width = typedArray.getDimension(
                 R.styleable.ImageViewLogo_android_layout_width, 0F);
         layout_width_difference = expanded_layout_width - collapsed_layout_width;
+
+        collapsed_margin_start = typedArray.getDimension(
+                R.styleable.ImageViewLogo_collapsed_margin_start, 0F);
+        expanded_margin_start = (displayMetrics.widthPixels / 2) - (expanded_layout_width / 2);
+        margin_start_difference = expanded_margin_start - collapsed_margin_start;
 
         collapsed_scroll_position = typedArray.getDimension(
                 R.styleable.ImageViewLogo_collapsed_scroll_position, 0F);
@@ -66,10 +69,6 @@ public class CustomBehavior extends CoordinatorLayout.Behavior<ImageView> {
 
     @Override
     public boolean layoutDependsOn(CoordinatorLayout parent, ImageView child, View dependency) {
-
-        expanded_margin_start = (parent.getWidth() / 2) - (child.getWidth() / 2);
-        margin_start_difference = expanded_margin_start - collapsed_margin_start;
-
         return dependency.getId() == R.id.swipe_refresh_layout;
     }
 
@@ -80,7 +79,7 @@ public class CustomBehavior extends CoordinatorLayout.Behavior<ImageView> {
         float current_scroll_position_percent =
                 ((current_scroll_position - collapsed_scroll_position)
                         / scroll_position_difference);
-        //Log.v(LOG_TAG, "-> onDependentViewChanged -> " + current_scroll_position_percent);
+        //Log.d(LOG_TAG, "-> onDependentViewChanged -> " + current_scroll_position_percent);
 
         float current_layout_height =
                 collapsed_layout_height + (layout_height_difference * current_scroll_position_percent);
