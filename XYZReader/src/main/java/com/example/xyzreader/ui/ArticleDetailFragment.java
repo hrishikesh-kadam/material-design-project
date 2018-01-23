@@ -231,8 +231,15 @@ public class ArticleDetailFragment extends Fragment implements
 
             textViewSubTitle.setText(subTitle);
 
-            webView.loadData(mCursor.getString(ArticleLoader.Query.BODY).replaceAll("(\r\n|\n)", "<br />"),
+            int marginInDp = (int) (getResources().getDimension(R.dimen.keyline_1) /
+                    getResources().getDisplayMetrics().density);
+
+            webView.loadData("<html><body style=\"margin:" + marginInDp + ";padding:0\">" +
+                            mCursor.getString(ArticleLoader.Query.BODY).
+                                    replaceAll("(\r\n|\n)", "<br />")
+                            + "</body></html>",
                     "text/html", null);
+
             webView.setBackgroundColor(0);
             webView.setWebChromeClient(new WebChromeClient() {
 
