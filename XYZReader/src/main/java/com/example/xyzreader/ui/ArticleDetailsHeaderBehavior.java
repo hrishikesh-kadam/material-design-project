@@ -2,209 +2,207 @@ package com.example.xyzreader.ui;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
 
 import com.example.xyzreader.R;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
- * Created by Hrishikesh Kadam on 15/01/2018
+ * Created by Hrishikesh Kadam on 22/01/2018
  */
 
-public class ArticleDetailsHeaderBehavior extends CoordinatorLayout.Behavior<TextView> {
+public class ArticleDetailsHeaderBehavior extends AppBarLayout.ScrollingViewBehavior {
 
     private static final String LOG_TAG = ArticleDetailsHeaderBehavior.class.getSimpleName();
 
-    private DisplayMetrics displayMetrics;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
-    private float collapsedTitleTextSize;
-    private float expandedTitleTextSize;
-    private float titleTextSizeDifference;
+    @BindView(R.id.textViewToolbar)
+    TextView textViewToolbar;
 
-    private float collapsedY;
+    @BindView(R.id.textViewTitle)
+    TextView textViewTitle;
+
+    @BindView(R.id.textViewSubTitle)
+    TextView textViewSubTitle;
+
+    private float imageViewHeight;
+    private float keyline1;
+
     private float expandedY;
-    private float yScrollDifference;
+    private float collapsedY;
+    private float differenceScrollY;
+
+    private float shrinkExpandedY;
+    private float shrinkCollapsedY;
+    private float differenceShrinkY;
+
+    private float expandedTitleTextSize;
+    private float collapsedTitleTextSize;
+    private float differenceTitleTextSize;
+
+    private float expandedTitleMarginStart;
+    private float collapsedTitleMarginStart;
+    private float differenceTitleMarginStart;
 
     private float expandedTitleMarginTop;
     private float collapsedTitleMarginTop;
-    private float titleMarginTopDifference;
+    private float differenceTitleMarginTop;
 
-    private float collapsedTitleMarginStart;
-    private float expandedTitleMarginStart;
-    private float titleMarginStartDifference;
+    private boolean wasSubTitleVisible = true;
 
-    private float shrinkAtPercent;
-    private boolean isTextViewSubTitleVisible = true;
+    public ArticleDetailsHeaderBehavior() {
+        super();
+    }
 
     public ArticleDetailsHeaderBehavior(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        displayMetrics = context.getResources().getDisplayMetrics();
-        Log.i(LOG_TAG, "-> constructor -> " + displayMetrics.toString());
+        imageViewHeight = context.getResources().
+                getDimension(R.dimen.article_details_imageView_height);
 
-        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ArticleDetailsHeaderTextView);
+        keyline1 = context.getResources().getDimension(R.dimen.keyline_1);
 
-        expandedTitleTextSize = typedArray.getDimension(
-                R.styleable.ArticleDetailsHeaderTextView_android_textSize, 0F);
-        //Log.d(LOG_TAG, "-> constructor -> expandedTitleTextSize = " + expandedTitleTextSize);
+        expandedY = imageViewHeight;
+        collapsedY = 0;
+        differenceScrollY = expandedY - collapsedY;
 
-        collapsedY = typedArray.getDimension(
-                R.styleable.ArticleDetailsHeaderTextView_collapsed_y, 0F);
-        //Log.d(LOG_TAG, "-> constructor -> collapsedY = " + collapsedY);
+        int[] actionBarAttrs = {android.R.attr.actionBarSize};
+        TypedArray typedArray = context.obtainStyledAttributes(actionBarAttrs);
 
-        expandedY = typedArray.getDimension(
-                R.styleable.ArticleDetailsHeaderTextView_expanded_y, 0F);
-        //Log.d(LOG_TAG, "-> constructor -> expandedY = " + expandedY);
-
-        yScrollDifference = expandedY - collapsedY;
-
-        expandedTitleMarginTop = typedArray.getDimension(
-                R.styleable.ArticleDetailsHeaderTextView_android_layout_marginTop, 0F);
-        //Log.d(LOG_TAG, "-> constructor -> expandedTitleMarginTop = " + expandedTitleMarginTop);
-
-        expandedTitleMarginStart = typedArray.getDimension(
-                R.styleable.ArticleDetailsHeaderTextView_android_layout_marginStart, 0F);
-        //Log.d(LOG_TAG, "-> constructor -> expandedTitleMarginStart = " + expandedTitleMarginStart);
-
-        collapsedTitleMarginStart = typedArray.getDimension(
-                R.styleable.ArticleDetailsHeaderTextView_collapsed_title_marginStart, 0F);
-        //Log.d(LOG_TAG, "-> constructor -> collapsedTitleMarginStart = " + collapsedTitleMarginStart);
-
-        titleMarginStartDifference = collapsedTitleMarginStart - expandedTitleMarginStart;
-
-        shrinkAtPercent = typedArray.getFloat(
-                R.styleable.ArticleDetailsHeaderTextView_shrinkAtPercent, 0.3F);
-        //Log.d(LOG_TAG, "-> constructor -> shrinkAtPercent = " + shrinkAtPercent);
-
-        typedArray.recycle();
+        shrinkExpandedY = typedArray.getDimension(0, 0F);
+        shrinkCollapsedY = 0;
+        differenceShrinkY = shrinkExpandedY - shrinkCollapsedY;
 
         int[] textViewToolbarAttrs = {android.R.attr.textSize};
         typedArray = context.obtainStyledAttributes(
                 R.style.TextAppearance_AppCompat_Widget_ActionBar_Title, textViewToolbarAttrs);
 
+        expandedTitleTextSize = context.getResources()
+                .getDimension(R.dimen.article_details_textViewTitle_textSize);
         collapsedTitleTextSize = typedArray.getDimension(0, 0F);
-        //Log.d(LOG_TAG, "-> constructor -> collapsedTitleTextSize = " + collapsedTitleTextSize);
-
-        titleTextSizeDifference = expandedTitleTextSize - collapsedTitleTextSize;
-        //Log.d(LOG_TAG, "-> constructor -> titleTextSizeDifference = " + titleTextSizeDifference);
+        differenceTitleTextSize = expandedTitleTextSize - collapsedTitleTextSize;
 
         typedArray.recycle();
-
-        int[] actionBarAttrs = {android.R.attr.actionBarSize};
-        typedArray = context.obtainStyledAttributes(actionBarAttrs);
-
-        float actionBarSize = typedArray.getDimension(0, 0F);
-
-        typedArray.recycle();
-
-        //TODO optimise if possible
-        collapsedTitleMarginTop = (actionBarSize - collapsedTitleTextSize) / 2;
-        //Log.d(LOG_TAG, "-> constructor -> collapsedTitleMarginTop = " + collapsedTitleMarginTop);
-
-        titleMarginTopDifference = expandedTitleMarginTop - collapsedTitleMarginTop;
     }
 
     @Override
-    public boolean layoutDependsOn(CoordinatorLayout parent, TextView child, View dependency) {
+    public boolean onMeasureChild(CoordinatorLayout parent, View child, int parentWidthMeasureSpec,
+                                  int widthUsed, int parentHeightMeasureSpec, int heightUsed) {
+        //Log.d(LOG_TAG, "-> onMeasureChild");
 
-        //Log.d(LOG_TAG, "-> layoutDependsOn -> " + dependency.getClass().getSimpleName());
+        ButterKnife.bind(this, parent);
 
-        if (dependency.getId() == R.id.nestedScrollView) {
+        expandedTitleMarginTop = imageViewHeight + keyline1;
+        // TODO optimise if possible
+        collapsedTitleMarginTop = textViewToolbar.getY();
+        //Log.d(LOG_TAG, "-> onMeasureChild -> collapsedTitleMarginTop = " + collapsedTitleMarginTop);
+        differenceTitleMarginTop = expandedTitleMarginTop - collapsedTitleMarginTop;
 
-            TextView textViewSubTitle = parent.findViewById(R.id.textViewSubTitle);
-            expandedTitleMarginStart = textViewSubTitle.getX() + textViewSubTitle.getPaddingStart();
-            titleMarginStartDifference = collapsedTitleMarginStart - expandedTitleMarginStart;
+        return super.onMeasureChild(parent, child, parentWidthMeasureSpec, widthUsed,
+                parentHeightMeasureSpec, heightUsed);
+    }
 
-            //Log.d(LOG_TAG, "-> layoutDependsOn -> expandedTitleMarginStart = " + expandedTitleMarginStart);
+    @Override
+    public boolean layoutDependsOn(CoordinatorLayout parent, View child, View dependency) {
+        //Log.d(LOG_TAG, "-> layoutDependsOn");
 
-            return true;
+        if (dependency.getId() == R.id.appBarLayout) {
+
+            textViewSubTitle = parent.findViewById(R.id.textViewSubTitle);
+            textViewToolbar = parent.findViewById(R.id.textViewToolbar);
+
+            expandedTitleMarginStart = textViewSubTitle.getX();
+            // TODO optimise if possible
+            collapsedTitleMarginStart = textViewToolbar.getX();
+            //Log.d(LOG_TAG, "-> onMeasureChild -> collapsedTitleMarginStart = " + collapsedTitleMarginStart);
+            differenceTitleMarginStart = collapsedTitleMarginStart - expandedTitleMarginStart;
         }
-        return false;
+
+        return super.layoutDependsOn(parent, child, dependency);
     }
 
     @Override
-    public boolean onDependentViewChanged(CoordinatorLayout parent, TextView child, View dependency) {
+    public boolean onDependentViewChanged(CoordinatorLayout parent, View child, View dependency) {
 
-        float scrollPosition = dependency.getY();
-        //Log.d(LOG_TAG, "-> onDependentViewChanged -> scrollPosition = " + scrollPosition);
+        float scrollPosition = expandedY + dependency.getY();
+        float scrollPercent = ((collapsedY + scrollPosition) / differenceScrollY);
+        //Log.v(LOG_TAG, "-> onDependentViewChanged -> scrollPercent = " + scrollPercent);
+        float shrinkPercent = ((shrinkCollapsedY + scrollPosition) / differenceShrinkY);
+        //Log.v(LOG_TAG, "-> onDependentViewChanged -> shrinkPercent = " + shrinkPercent);
 
-        float scrollPercent = ((scrollPosition - collapsedY)
-                / yScrollDifference);
-        //Log.d(LOG_TAG, "-> onDependentViewChanged -> scrollPercent = " + scrollPercent);
-
-        float shrinkScrollPercent = scrollPercent / shrinkAtPercent;
+        boolean shouldSubTitleBeVisible = true;
+        CoordinatorLayout.LayoutParams layoutParams =
+                (CoordinatorLayout.LayoutParams) textViewTitle.getLayoutParams();
+        float textSizePx = expandedTitleTextSize;
 
         if (scrollPercent < 0) {
 
-            child.setVisibility(View.INVISIBLE);
-            parent.findViewById(R.id.textViewToolbar).setVisibility(View.VISIBLE);
-            return true;
+            textSizePx = collapsedTitleTextSize;
 
-        } else if (shrinkScrollPercent >= 0.0 && shrinkScrollPercent <= 1.0) {
-            //Log.d(LOG_TAG, "-> onDependentViewChanged -> shrinkScrollPercent = " + shrinkScrollPercent);
-
-            float textSizePx =
-                    collapsedTitleTextSize + (titleTextSizeDifference * shrinkScrollPercent);
-            //Log.d(LOG_TAG, "-> onDependentViewChanged -> textSizePx = " + textSizePx);
-            child.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSizePx);
-
-            float titleMarginTop = expandedTitleMarginTop - (expandedY - scrollPosition);
-            //Log.d(LOG_TAG, "-> onDependentViewChanged -> titleMarginTop = " + titleMarginTop);
-
-            float titleMarginStart =
-                    collapsedTitleMarginStart - (titleMarginStartDifference * shrinkScrollPercent);
-            //Log.d(LOG_TAG, "-> onDependentViewChanged -> titleMarginStart = " + titleMarginStart);
-
-            CoordinatorLayout.LayoutParams layoutParams =
-                    (CoordinatorLayout.LayoutParams) child.getLayoutParams();
-            layoutParams.setMargins((int) titleMarginStart, (int) titleMarginTop, 0, 0);
-            layoutParams.topMargin = (int) titleMarginTop;
-            child.setLayoutParams(layoutParams);
-
-            child.setVisibility(View.VISIBLE);
-            parent.findViewById(R.id.textViewToolbar).setVisibility(View.INVISIBLE);
-
-            if (isTextViewSubTitleVisible) {
-                parent.findViewById(R.id.textViewSubTitle)
-                        .animate().alpha(0.0F).setDuration(300).start();
-                isTextViewSubTitleVisible = false;
-            }
-
-        } else if (scrollPercent >= 0.0 && scrollPercent <= 1.1) {
-
-            //Log.d(LOG_TAG, "-> onDependentViewChanged -> scrollPercent = " + scrollPercent);
-
-            float textSizePx = expandedTitleTextSize;
-            //Log.d(LOG_TAG, "-> onDependentViewChanged -> textSizePx = " + textSizePx);
-            child.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSizePx);
-
-            float titleMarginTop = expandedTitleMarginTop - (expandedY - scrollPosition);
-            //Log.d(LOG_TAG, "-> onDependentViewChanged -> titleMarginTop = " + titleMarginTop);
-
-            float titleMarginStart = expandedTitleMarginStart;
-
-            CoordinatorLayout.LayoutParams layoutParams =
-                    (CoordinatorLayout.LayoutParams) child.getLayoutParams();
-            layoutParams.setMargins((int) titleMarginStart, (int) titleMarginTop, 0, 0);
-            layoutParams.topMargin = (int) titleMarginTop;
-            child.setLayoutParams(layoutParams);
-
-            child.setVisibility(View.VISIBLE);
-            parent.findViewById(R.id.textViewToolbar).setVisibility(View.INVISIBLE);
-
-            if (!isTextViewSubTitleVisible) {
-                parent.findViewById(R.id.textViewSubTitle)
-                        .animate().alpha(1.0F).setDuration(300).start();
-                isTextViewSubTitleVisible = true;
-            }
+            textViewTitle.setVisibility(View.INVISIBLE);
+            textViewToolbar.setVisibility(View.VISIBLE);
+            shouldSubTitleBeVisible = false;
         }
 
-        return true;
+        if (scrollPercent >= 0 && scrollPercent <= 1) {
+            //Log.v(LOG_TAG, "-> onDependentViewChanged -> scrollPercent = " + scrollPercent);
+
+            textSizePx = expandedTitleTextSize;
+
+            float titleMarginTop = expandedTitleMarginTop + dependency.getY();
+            //Log.d(LOG_TAG, "-> onDependentViewChanged -> titleMarginTop = " + titleMarginTop);
+
+            layoutParams.setMargins(
+                    (int) expandedTitleMarginStart, (int) titleMarginTop, (int) keyline1, 0);
+            layoutParams.setMarginStart((int) expandedTitleMarginStart);
+
+            textViewTitle.setVisibility(View.VISIBLE);
+            textViewToolbar.setVisibility(View.INVISIBLE);
+            shouldSubTitleBeVisible = true;
+        }
+
+        if (shrinkPercent >= 0 && shrinkPercent <= 1) {
+            //Log.v(LOG_TAG, "-> onDependentViewChanged -> shrinkPercent = " + shrinkPercent);
+
+            textSizePx =
+                    collapsedTitleTextSize + (differenceTitleTextSize * shrinkPercent);
+            //Log.d(LOG_TAG, "-> onDependentViewChanged -> textSizePx = " + textSizePx);
+
+            float titleMarginStart =
+                    collapsedTitleMarginStart - (differenceTitleMarginStart * shrinkPercent);
+            //Log.d(LOG_TAG, "-> onDependentViewChanged -> titleMarginStart = " + titleMarginStart);
+
+            layoutParams.leftMargin = (int) titleMarginStart;
+            layoutParams.setMarginStart((int) titleMarginStart);
+            shouldSubTitleBeVisible = false;
+        }
+
+        textViewTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSizePx);
+        textViewTitle.setLayoutParams(layoutParams);
+
+        if (shouldSubTitleBeVisible && !wasSubTitleVisible) {
+
+            textViewSubTitle.animate().cancel();
+            textViewSubTitle.animate().alpha(1.0F).setDuration(300).start();
+            wasSubTitleVisible = true;
+
+        } else if (!shouldSubTitleBeVisible && wasSubTitleVisible) {
+
+            textViewSubTitle.animate().cancel();
+            textViewSubTitle.animate().alpha(0.0F).setDuration(300).start();
+            wasSubTitleVisible = false;
+        }
+
+        return super.onDependentViewChanged(parent, child, dependency);
     }
 }
-

@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <integer name="list_column_count">3</integer>
+
+    <dimen name="article_details_card_view_width">500dp</dimen>
 </resources>

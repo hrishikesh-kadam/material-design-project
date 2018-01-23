@@ -15,9 +15,10 @@
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/collapsingToolbarLayout"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/article_details_collapsing_toolbar_height"
+            android:layout_height="wrap_content"
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:scrimVisibleHeightTrigger="0dp"
             app:titleEnabled="false">
 
             <ImageView
@@ -37,24 +38,42 @@
                 app:layout_collapseParallaxMultiplier="0.8"
                 tools:src="@drawable/second_variety_image" />
 
-            <RelativeLayout
+            <LinearLayout
                 android:id="@+id/viewHeader"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/article_details_viewHeader_height"
+                android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:background="?attr/colorPrimary">
+                android:layout_marginTop="@dimen/article_details_imageView_height"
+                android:background="?attr/colorPrimary"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textViewTitleHolder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/keyline_1"
+                    android:layout_marginStart="@dimen/keyline_1"
+                    android:layout_marginTop="@dimen/keyline_1"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+                    android:textColor="#FFF"
+                    android:textSize="@dimen/article_details_textViewTitle_textSize"
+                    android:visibility="invisible"
+                    tools:text="@string/dummy_title"
+                    tools:visibility="visible" />
 
                 <TextView
                     android:id="@+id/textViewSubTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/keyline_1"
+                    android:layout_marginEnd="@dimen/keyline_1"
                     android:layout_marginStart="@dimen/keyline_1"
-                    android:layout_marginTop="55dp"
+                    android:layout_marginTop="8dp"
                     android:textColor="#FFF"
                     android:textSize="16sp"
-                    tools:text="Jan 1, 1820 by Washington Irving" />
+                    tools:text="@string/dummy_sub_title" />
 
-            </RelativeLayout>
+            </LinearLayout>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -68,9 +87,11 @@
                     android:id="@+id/textViewToolbar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/keyline_1"
+                    android:ellipsize="end"
+                    android:maxLines="1"
                     android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
-                    android:visibility="invisible"
-                    tools:text="The Legend of Sleepy Hollow"
+                    tools:text="@string/dummy_title"
                     tools:visibility="visible" />
 
             </android.support.v7.widget.Toolbar>
@@ -83,24 +104,21 @@
         android:id="@+id/textViewTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/keyline_1"
         android:layout_marginStart="@dimen/keyline_1"
-        android:layout_marginTop="@dimen/article_details_textViewTitle_marginTop"
         android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
         android:textColor="#FFF"
-        android:textSize="26sp"
-        app:collapsed_title_marginStart="@dimen/keyline_2"
-        app:collapsed_y="@dimen/article_details_viewHeader_height"
-        app:expanded_y="@dimen/article_details_collapsing_toolbar_height"
-        app:layout_behavior="com.example.xyzreader.ui.ArticleDetailsHeaderBehavior"
-        app:shrinkAtPercent="0.2"
-        tools:text="The Legend of Sleepy Hollow" />
+        android:textSize="@dimen/article_details_textViewTitle_textSize"
+        tools:layout_anchor="@id/textViewTitleHolder"
+        tools:layout_anchorGravity="center"
+        tools:text="@string/dummy_title" />
 
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="vertical"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        app:layout_behavior="com.example.xyzreader.ui.ArticleDetailsHeaderBehavior">
 
         <FrameLayout
             android:layout_width="match_parent"

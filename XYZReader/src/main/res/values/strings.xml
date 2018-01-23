@@ -13,4 +13,7 @@
     <string name="done">Done</string>
     <string name="sharing_some_glimpse">Hey! Sharing some glimpse of this article</string>
 
+    <string name="dummy_title">The Legend of Sleepy Hollow</string>
+    <string name="dummy_sub_title">Jan 1, 1820 by Washington Irving</string>
+
 </resources>

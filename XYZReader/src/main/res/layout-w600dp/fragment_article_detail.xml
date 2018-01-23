@@ -10,15 +10,15 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:elevation="0dp">
+        android:layout_height="wrap_content">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/collapsingToolbarLayout"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/article_details_collapsing_toolbar_height"
+            android:layout_height="wrap_content"
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:scrimVisibleHeightTrigger="0dp"
             app:titleEnabled="false">
 
             <ImageView
@@ -38,26 +38,48 @@
                 app:layout_collapseParallaxMultiplier="0.8"
                 tools:src="@drawable/second_variety_image" />
 
-            <RelativeLayout
+            <LinearLayout
                 android:id="@+id/viewHeader"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/article_details_viewHeader_height"
-                android:layout_gravity="bottom"
-                android:background="?attr/colorPrimary">
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginTop="@dimen/article_details_imageView_height"
+                android:background="?attr/colorPrimary"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textViewTitleHolder"
+                    android:layout_width="@dimen/article_details_card_view_width"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginEnd="@dimen/keyline_1"
+                    android:layout_marginStart="@dimen/keyline_1"
+                    android:layout_marginTop="@dimen/keyline_1"
+                    android:paddingEnd="@dimen/keyline_1"
+                    android:paddingStart="@dimen/keyline_1"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+                    android:textColor="#FFF"
+                    android:textSize="@dimen/article_details_textViewTitle_textSize"
+                    android:visibility="invisible"
+                    tools:text="@string/dummy_title"
+                    tools:visibility="visible" />
 
                 <TextView
                     android:id="@+id/textViewSubTitle"
-                    android:layout_width="500dp"
+                    android:layout_width="@dimen/article_details_card_view_width"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="55dp"
-                    android:paddingEnd="16dp"
-                    android:paddingStart="16dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="@dimen/keyline_1"
+                    android:layout_marginEnd="@dimen/keyline_1"
+                    android:layout_marginStart="@dimen/keyline_1"
+                    android:layout_marginTop="8dp"
+                    android:paddingEnd="@dimen/keyline_1"
+                    android:paddingStart="@dimen/keyline_1"
                     android:textColor="#FFF"
                     android:textSize="16sp"
-                    tools:text="Jan 1, 1820 by Washington Irving" />
+                    tools:text="@string/dummy_sub_title" />
 
-            </RelativeLayout>
+            </LinearLayout>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -71,9 +93,11 @@
                     android:id="@+id/textViewToolbar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/keyline_1"
+                    android:ellipsize="end"
+                    android:maxLines="1"
                     android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
-                    android:visibility="invisible"
-                    tools:text="The Legend of Sleepy Hollow"
+                    tools:text="@string/dummy_title"
                     tools:visibility="visible" />
 
             </android.support.v7.widget.Toolbar>
@@ -82,31 +106,27 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <!-- Press 'B' key three times in preview window to see
+    the actual position of this textView -->
     <TextView
         android:id="@+id/textViewTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="500dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/keyline_1"
         android:layout_marginStart="@dimen/keyline_1"
-        android:layout_marginTop="@dimen/article_details_textViewTitle_marginTop"
+        android:paddingEnd="@dimen/keyline_1"
+        android:paddingStart="@dimen/keyline_1"
         android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
         android:textColor="#FFF"
-        android:textSize="26sp"
-        app:collapsed_title_marginStart="@dimen/keyline_2"
-        app:collapsed_y="@dimen/article_details_viewHeader_height"
-        app:expanded_y="@dimen/article_details_collapsing_toolbar_height"
-        app:layout_behavior="com.example.xyzreader.ui.ArticleDetailsHeaderBehavior"
-        app:shrinkAtPercent="0.2"
-        tools:layout_gravity="center_horizontal"
-        tools:layout_width="500dp"
-        tools:paddingStart="8dp"
-        tools:text="The Legend of Sleepy Hollow" />
+        android:textSize="@dimen/article_details_textViewTitle_textSize"
+        tools:text="@string/dummy_title" />
 
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="vertical"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        app:layout_behavior="com.example.xyzreader.ui.ArticleDetailsHeaderBehavior">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -119,7 +139,7 @@
                 android:background="?attr/colorPrimary" />
 
             <android.support.v7.widget.CardView
-                android:layout_width="500dp"
+                android:layout_width="@dimen/article_details_card_view_width"
                 android:layout_height="match_parent"
                 android:layout_centerHorizontal="true">
 
